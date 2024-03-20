@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -53,7 +54,6 @@ it('can allow user to edit his information', function () {
         'password' => 'new password',
     ]);
 
-    $newUser = User::all();
     $response->assertStatus(200);
     $this->assertEquals('new jon -v-', User::first()->name);
     $response->assertJsonPath('data.name', User::first()->name);
@@ -70,4 +70,11 @@ it('can allow user to delete his account', function () {
     $response->assertStatus(200);
     $this->assertDatabaseCount('users', 0);
     $response->assertSee('removed successfully');
+});
+
+it('user has profile', function () {
+    $user = User::factory()->create();
+    $profile = Profile::factory()->create(['user_id' => $user->id]);
+
+    $this->assertInstanceOf(Profile::class, $user->profile);
 });
