@@ -1,10 +1,10 @@
 <?php
 
+use App\Models\Post;
 use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class);
 
 it('can add user', function () {
     $this->withoutExceptionHandling();
@@ -77,4 +77,12 @@ it('user has profile', function () {
     $profile = Profile::factory()->create(['user_id' => $user->id]);
 
     $this->assertInstanceOf(Profile::class, $user->profile);
+});
+
+it('user has many posts', function () {
+    $this->withoutExceptionHandling();
+    $user = User::factory()->create();
+    $post = Post::factory()->create();
+
+    $this->assertTrue($user->posts->contains($post));
 });
