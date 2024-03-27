@@ -17,16 +17,7 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        return new ProfileCollection(Profile::paginate());
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreProfileRequest $request)
-    {
-        Profile::create($request->validated());
-        return response()->json(['created' => true], 201);
+        return new ProfileCollection(Profile::with(['user', 'image'])->paginate());
     }
 
     /**
@@ -46,7 +37,24 @@ class ProfileController extends Controller
             abort(403);
         }
         $profile->update($request->validated());
+        if ($request->hasFile('url')) {
+            $profile->updateImage($request->file('url')->store('/uploads'));
+        }
         return new ProfileResource($profile);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreProfileRequest $request)
+    {
+        $profile = Profile::create($request->validated());
+
+        if ($request->hasFile('url')) {
+            $profile->storeImage($request->file('url')->store('/uploads'));
+        }
+
+        return response()->json(['created' => true], 201);
     }
 
     /**

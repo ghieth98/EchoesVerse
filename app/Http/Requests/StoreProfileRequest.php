@@ -25,8 +25,9 @@ class StoreProfileRequest extends FormRequest
         return [
             'bio' => ['required'],
             'phone_number' => ['nullable'],
+            'url' => ['nullable'],
             'address' => ['nullable'],
-            'user_id' => ['required'],
+            'user_id' => ['required', 'exists:users,id'],
             'gender' => ['nullable']
         ];
     }

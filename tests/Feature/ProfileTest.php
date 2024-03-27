@@ -9,14 +9,13 @@ uses(RefreshDatabase::class);
 it('user can add a profile', function () {
     $this->withoutExceptionHandling();
 
-    User::factory()->create();
+    $user = User::factory()->create();
 
     $response = $this->postJson('/api/profile', [
-        //TODO ADD PROFILE DATA HERE
         'bio' => 'test bio sentence',
         'phone_number' => fake()->phoneNumber,
         'address' => fake()->address,
-        'user_id' => 2,
+        'user_id' => $user->id,
         'gender' => 'male'
     ]);
     $this->assertDatabaseCount('profiles', 1);
@@ -31,12 +30,12 @@ it('user can add a profile', function () {
 it('user can view his profile information', function () {
     $this->withoutExceptionHandling();
 
-    User::factory()->create();
+    $user = User::factory()->create();
     $this->postJson('/api/profile', [
         'bio' => 'test bio sentence',
         'phone_number' => fake()->phoneNumber,
         'address' => fake()->address,
-        'user_id' => 2,
+        'user_id' => $user->id,
         'gender' => 'male'
     ]);
     $profile = Profile::first();
@@ -88,17 +87,19 @@ it('user can view other users profiles', function () {
 });
 
 it('user can only create/edit his own profile', function () {
+//    $this->withoutExceptionHandling();
+    User::factory(10)->create();
+    $user = User::first();
 
-    User::factory()->create();
     $this->postJson('/api/profile', [
         'bio' => 'test bio sentence',
         'phone_number' => fake()->phoneNumber,
         'address' => fake()->address,
-        'user_id' => 1,
+        'user_id' => $user->id,
         'gender' => 'male'
     ]);
-    $user = User::first()->get();
-    $profile = Profile::first('id');
+    $newUser = User::first();
+    $profile = Profile::first();
 
     $response = $this->patchJson('/api/profile/' . $profile->id, [
         'user_id' => 2,
@@ -109,8 +110,8 @@ it('user can only create/edit his own profile', function () {
 
 
 it('profile belongs to user', function () {
-    $user = User::factory()->create();
-    $profile = Profile::factory()->create(['user_id' => $user->id]);
+    $newUser = User::factory()->create();
+    $profile = Profile::factory()->create(['user_id' => $newUser->id]);
 
     $this->assertInstanceOf(User::class, $profile->user);
 });

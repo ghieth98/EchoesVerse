@@ -27,7 +27,8 @@ class UpdateProfileRequest extends FormRequest
             'phone_number' => ['nullable'],
             'address' => ['nullable'],
             'user_id' => ['required'],
-            'gender' => ['nullable']
+            'gender' => ['nullable'],
+            'url' => ['nullable']
         ];
     }
 }

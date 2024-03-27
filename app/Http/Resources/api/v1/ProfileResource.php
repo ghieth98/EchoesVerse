@@ -18,9 +18,10 @@ class ProfileResource extends JsonResource
             'name' => $this->user?->name,
             'email' => $this->user?->email,
             'bio' => $this->bio,
-            'phone_number' => $this->phone_number,
+            'phone number' => $this->phone_number,
             'address' => $this->address,
-            'gender' => $this->gender
+            'gender' => $this->gender,
+            'profile image' =>  $this->getImage()
         ];
     }
 }
