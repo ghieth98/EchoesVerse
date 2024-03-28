@@ -24,28 +24,10 @@ class Post extends Model
     }
 
 
-    public function like(Post $post): void
-    {
-        if (!$this->isLiked($post)) {
-            Post::create([
-                'user_id' => auth()->id(),
-                'post_id' => $post->id
-            ]);
-        }
-    }
-
-    public function isLiked(Post $post): bool
-    {
-        return $this->likes()->where('posts.id', $post->id)->exists();
-    }
-
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
     }
 
-    public function unlike(Post $post): void
-    {
-        Like::where('post_id', $post->id)->delete();
-    }
+
 }

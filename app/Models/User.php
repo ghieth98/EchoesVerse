@@ -55,7 +55,6 @@ class User extends Authenticatable
         }
     }
 
-
     public function isFollowing(User $user): bool
     {
         return $this->following()->where('users.id', $user->id)->exists();
@@ -64,6 +63,31 @@ class User extends Authenticatable
     public function following(): HasManyThrough
     {
         return $this->hasManyThrough(User::class, Follow::class, 'user_id', 'id', 'id', 'following_id');
+    }
+
+    public function like(Post $post): void
+    {
+        if (!$this->isLiked($post)) {
+            Like::create([
+                'user_id' => auth()->id(),
+                'post_id' => $post->id
+            ]);
+        }
+    }
+
+    public function isLiked(Post $post): bool
+    {
+        return $this->likes()->where('likes.post_id', $post->id)->exists();
+    }
+
+    public function likes(): HasMany
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    public function unlike(Post $post): void
+    {
+        Like::where('post_id', $post->id)->delete();
     }
 
     public function followers(): HasManyThrough

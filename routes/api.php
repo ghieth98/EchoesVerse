@@ -13,3 +13,4 @@ Route::apiResource('/post', PostController::class);
 Route::post('/follow', [FollowController::class, 'store'])->name('follow.store');
 Route::delete('/unfollow', [FollowController::class, 'destroy'])->name('follow.destroy');
 Route::post('/like', [LikeController::class, 'store'])->name('like.store');
+Route::delete('/unlike', [LikeController::class, 'destroy'])->name('like.destroy');
