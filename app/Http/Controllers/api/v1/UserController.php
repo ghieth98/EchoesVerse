@@ -16,7 +16,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        return new UserCollection(User::paginate());
+        $users = User::with(['likes', 'profile', 'posts'])->paginate();
+        return new UserCollection($users);
     }
 
     /**
@@ -35,7 +36,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return new UserResource($user);
+        return new UserResource($user->with(['likes', 'profile', 'posts']));
     }
 
     /**
@@ -54,6 +55,6 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
-        return response()->json('removed successfully', 200);
+        return response()->json('removed successfully');
     }
 }
