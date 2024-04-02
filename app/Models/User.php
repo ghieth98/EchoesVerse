@@ -100,6 +100,11 @@ class User extends Authenticatable
         Follow::where('user_id', auth()->id())->where('following_id', $user->id)->delete();
     }
 
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
