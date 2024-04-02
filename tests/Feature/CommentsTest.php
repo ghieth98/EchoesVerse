@@ -40,14 +40,15 @@ test('user can edit post comment', function () {
 
     $comment = Comment::first();
 
-    actingAs($user)->patchJson("/api/post/{$this->post->id}/comments/{$comment->id}", [
-        'user_id' => $user->id,
+    actingAs($user)->patchJson("/api/comments/". $comment->id, [
         'comment' => 'new comment',
-        'post_id' => $this->post->id
+        'post_id' => $this->post->id,
+        'user_id' => $user->id
     ])->assertStatus(200);
 
     $this->assertDatabaseHas('comments', [
         'comment' => 'new comment',
+        'post_id' => $this->post->id
     ]);
 });
 
@@ -59,8 +60,10 @@ test('user delete comment', function () {
         'post_id' => $this->post->id
     ])->assertStatus(201);
 
+
     $comment = Comment::first();
-    $response = $this->deleteJson('/api/post/{post}/comments/' . $comment->id);
+
+    $response = $this->deleteJson('/api/comments/' . $comment->id);
 
     $response->assertStatus(200);
     $this->assertDatabaseCount('comments', 0);
