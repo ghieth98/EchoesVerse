@@ -18,8 +18,12 @@ class PostResource extends JsonResource
             'name' => $this->user->name,
             'title' => $this->title,
             'body' => $this->body,
-            'created_at' => $this->created_at,
             'post image' => $this->getImage(),
+            'likes' => $this->whenCounted('likes'),
+            'comments' => CommentResource::collection($this->whenLoaded('comments')),
+            'comments_count' => $this->whenCounted('comments'),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at
 
         ];
     }

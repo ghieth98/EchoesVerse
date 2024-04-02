@@ -15,7 +15,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        return PostResource::collection(Post::paginate());
+        $post = Post::withCount(['likes', 'comments'])->paginate();
+        return PostResource::collection($post);
     }
 
     /**
@@ -35,7 +36,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return new PostResource($post);
+        return new PostResource($post->with(['likes', 'comments'])->get());
     }
 
     /**
