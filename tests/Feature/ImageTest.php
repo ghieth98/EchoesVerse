@@ -6,7 +6,7 @@ use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use function Pest\Laravel\postJson;
+use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -18,9 +18,8 @@ beforeEach(function () {
 
 it('image belongs to user profile', function () {
     Storage::fake('public');
-
     $image = UploadedFile::fake()->image('avatar.jpg');
-    postJson('/api/profile', [
+    actingAs($this->user)->postJson('/api/profile', [
         'bio' => 'test bio sentence',
         'phone_number' => fake()->phoneNumber,
         'address' => fake()->address,
@@ -39,7 +38,7 @@ it('image belongs to post', function () {
     Storage::fake('public');
 
     $image = UploadedFile::fake()->image('avatar.jpg');
-    $this->actingAs($this->user)->postJson('/api/post/', [
+    actingAs($this->user)->postJson('/api/post/', [
         'title' => 'post title',
         'body' => fake()->realText,
         'user_id' => $this->user->id,
@@ -56,7 +55,7 @@ it('can add image to profile', function () {
 
     $image = UploadedFile::fake()->image('avatar.jpg');
 
-    postJson('/api/profile', [
+    actingAs($this->user)->postJson('/api/profile', [
         'bio' => 'test bio sentence',
         'phone_number' => fake()->phoneNumber,
         'address' => fake()->address,
@@ -86,7 +85,7 @@ it('user can add image to post', function () {
 
     $image = UploadedFile::fake()->image('avatar.jpg');
 
-    $this->actingAs($this->user)->postJson('/api/post/', [
+    actingAs($this->user)->postJson('/api/post/', [
         'title' => 'post title',
         'body' => fake()->realText,
         'user_id' => $this->user->id,
@@ -118,7 +117,7 @@ it('user can update profile image', function () {
 
     $newImage = UploadedFile::fake()->image('new avatar.jpg');
 
-    $this->actingAs($this->user)->patchJson('/api/profile/' . $profile->id, [
+    actingAs($this->user)->patchJson('/api/profile/' . $profile->id, [
         'user_id' => $profile->user_id,
         'bio' => 'new bio sentence',
         'url' => $newImage,
@@ -146,7 +145,7 @@ it('user can update post image', function () {
     $post = Post::first();
     $newImage = UploadedFile::fake()->image('new avatar.jpg');
 
-    $this->actingAs($this->user)->patchJson('/api/post/' . $post->id, [
+    actingAs($this->user)->patchJson('/api/post/' . $post->id, [
         'title' => 'new title',
         'body' => $post->body,
         'user_id' => $post->user_id,
@@ -173,13 +172,13 @@ it('user can view profile image', function () {
 
     $newImage = UploadedFile::fake()->image('new avatar.jpg');
 
-    $this->actingAs($this->user)->patchJson('/api/profile/' . $profile->id, [
+    actingAs($this->user)->patchJson('/api/profile/' . $profile->id, [
         'user_id' => $profile->user_id,
         'bio' => 'new bio sentence',
         'url' => $newImage,
     ]);
 
-    $this->getJson('/api/profile/')
+    actingAs($this->user)->getJson('/api/profile/')
         ->assertStatus(200)
         ->assertJsonPath('data.0.profile image', asset('uploads/' . $profile->image?->url));
 });
@@ -193,13 +192,13 @@ it('user can his own profile image', function () {
 
     $newImage = UploadedFile::fake()->image('new avatar.jpg');
 
-    $this->actingAs($this->user)->patchJson('/api/profile/' . $profile->id, [
+    actingAs($this->user)->patchJson('/api/profile/' . $profile->id, [
         'user_id' => $profile->user_id,
         'bio' => 'new bio sentence',
         'url' => $newImage,
     ]);
 
-    $this->getJson('/api/profile/' . $profile->id)
+    actingAs($this->user)->getJson('/api/profile/' . $profile->id)
         ->assertStatus(200)
         ->assertJsonPath('data.profile image', asset('uploads/' . $profile->image?->url));
 });
@@ -212,16 +211,16 @@ it('user can view posts image', function () {
 
     $newImage = UploadedFile::fake()->image('new avatar.jpg');
 
-    $this->actingAs($this->user)->patchJson('/api/post/' . $post->id, [
+    actingAs($this->user)->patchJson('/api/post/' . $post->id, [
         'title' => 'new title',
         'body' => $post->body,
         'user_id' => $post->user_id,
         'url' => $newImage
     ]);
 
-    $this->getJson('/api/post/')
+    actingAs($this->user)->getJson('/api/post/')
         ->assertStatus(200)
-        ->assertJsonPath('data.0.post image', asset('uploads/' . $post->image?->url));
+        ->assertJsonPath('data.0.image', asset('uploads/' . $post->image?->url));
 });
 
 it('user can view his own post image', function () {
@@ -232,28 +231,26 @@ it('user can view his own post image', function () {
 
     $newImage = UploadedFile::fake()->image('new avatar.jpg');
 
-    $this->actingAs($this->user)->patchJson('/api/post/' . $post->id, [
+    actingAs($this->user)->patchJson('/api/post/' . $post->id, [
         'title' => 'new title',
         'body' => $post->body,
         'user_id' => $post->user_id,
         'url' => $newImage
     ]);
 
-    $this->getJson('/api/post/' . $post->id)
+    actingAs($this->user)->getJson('/api/post/' . $post->id)
         ->assertStatus(200)
-        ->assertJsonPath('data.post image', asset('uploads/' . $post->image?->url));
+        ->assertJsonPath('data.image', asset('uploads/' . $post->image?->url));
 
 });
 
 
 it('image is deleted when post is deleted', function () {
 
-    $response = $this->actingAs($this->user)->deleteJson('/api/post/' . $this->post->id);
-
-    $response->assertStatus(200);
+    actingAs($this->user)->deleteJson('/api/post/' . $this->post->id)
+        ->assertStatus(200)
+        ->assertSee('removed successfully');
     $this->assertDatabaseCount('posts', 0);
     $this->assertDatabaseCount('images', 0);
-    $response->assertSee('removed successfully');
-
 });
 
