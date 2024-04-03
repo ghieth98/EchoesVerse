@@ -10,12 +10,12 @@ beforeEach(function () {
 });
 
 it('user can follow user', function () {
-    $user = User::first();
-    $user2 = User::find(2);
+
+    $user = $this->user->get(1);;
+    $user2 = $this->user->get(2);;
 
     actingAs($user)->postJson('/api/follow/', [
         'user_id' => $user2->id,
-        'following_id' => $user->id
     ])->assertStatus(201);
 
     $this->assertDatabaseCount('follows', 1);
@@ -24,11 +24,11 @@ it('user can follow user', function () {
 
 it('user can unfollow user', function () {
     $user = User::first();
-    $user2 = User::find(12);
+    $user2 = $this->user->get(2);
 
     actingAs($user)->deleteJson('/api/unfollow/', [
         'user_id' => $user2->id,
-        'following_id' => $user->id
+
     ])->assertStatus(200);
 
     $this->assertDatabaseCount('follows', 0);
