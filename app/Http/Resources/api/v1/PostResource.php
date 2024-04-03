@@ -15,10 +15,10 @@ class PostResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'name' => $this->user->name,
+            'name' => $this->user?->name,
             'title' => $this->title,
             'body' => $this->body,
-            'post image' => $this->getImage(),
+            'image' => $this->getImage(),
             'likes' => $this->whenCounted('likes'),
             'comments' => CommentResource::collection($this->whenLoaded('comments')),
             'comments_count' => $this->whenCounted('comments'),

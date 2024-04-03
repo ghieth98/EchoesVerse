@@ -30,7 +30,7 @@ it('user can view his own post', function () {
 
     $post = Post::factory()->create();
 
-    $response = $this->getJson('/api/post/' . $post->id);
+    $response = $this->actingAs($user)->getJson('/api/post/' . $post->id);
 
     $response->assertStatus(200);
 
@@ -40,13 +40,13 @@ it('user can view his own post', function () {
 });
 
 it('user can view users posts', function () {
-//    $this->withoutExceptionHandling();
 
-    $user = User::factory(100)->create();
+    User::factory(100)->create();
     Post::factory(200)->create();
     $post = Post::first();
+    $user = User::first();
 
-    $response = $this->getJson('/api/post');
+    $response = $this->actingAs($user)->getJson('/api/post');
 
     $response->assertStatus(200);
     $response->assertJsonPath('data.0.title', $post->title);
@@ -86,7 +86,6 @@ it('user can delete post', function () {
 });
 
 it('posts belongs to user', function () {
-//    $this->withoutExceptionHandling();
     $user = User::factory()->create();
     $post = Post::factory()->create();
 
