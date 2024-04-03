@@ -36,7 +36,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return new UserResource($user->with(['likes', 'profile', 'posts']));
+        return new UserResource($user);
     }
 
     /**

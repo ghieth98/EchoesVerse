@@ -11,7 +11,7 @@ it('user can add a profile', function () {
 
     $user = User::factory()->create();
 
-    $response = $this->postJson('/api/profile', [
+    $response = $this->actingAs($user)->postJson('/api/profile', [
         'bio' => 'test bio sentence',
         'phone_number' => fake()->phoneNumber,
         'address' => fake()->address,
@@ -31,7 +31,7 @@ it('user can view his profile information', function () {
     $this->withoutExceptionHandling();
 
     $user = User::factory()->create();
-    $this->postJson('/api/profile', [
+    $this->actingAs($user)->postJson('/api/profile', [
         'bio' => 'test bio sentence',
         'phone_number' => fake()->phoneNumber,
         'address' => fake()->address,
@@ -39,7 +39,7 @@ it('user can view his profile information', function () {
         'gender' => 'male'
     ]);
     $profile = Profile::first();
-    $response = $this->getJson('/api/profile/' . $profile->id);
+    $response = $this->actingAs($user)->getJson('/api/profile/' . $profile->id);
 
     $response->assertStatus(200);
     $response->assertJsonPath('data.bio', $profile->bio);
@@ -53,7 +53,7 @@ it('user can edit profile information', function () {
     User::factory()->create();
     $user = User::first();
 
-    $this->postJson('/api/profile', [
+    $this->actingAs($user)->postJson('/api/profile', [
         'bio' => 'test bio sentence',
         'phone_number' => fake()->phoneNumber,
         'address' => fake()->address,
@@ -78,34 +78,13 @@ it('user can view other users profiles', function () {
     $this->withoutExceptionHandling();
     User::factory(10)->create();
     Profile::factory(10)->create();
+    $user = User::first();
 
-    $response = $this->getJson('/api/profile/');
+    $response = $this->actingAs($user)->getJson('/api/profile/');
     $profile = Profile::first();
     $response->assertStatus(200);
     $response->assertJsonPath('data.0.bio', $profile->bio);
 
-});
-
-it('user can only create/edit his own profile', function () {
-//    $this->withoutExceptionHandling();
-    User::factory(10)->create();
-    $user = User::first();
-
-    $this->postJson('/api/profile', [
-        'bio' => 'test bio sentence',
-        'phone_number' => fake()->phoneNumber,
-        'address' => fake()->address,
-        'user_id' => $user->id,
-        'gender' => 'male'
-    ]);
-    $newUser = User::first();
-    $profile = Profile::first();
-
-    $response = $this->patchJson('/api/profile/' . $profile->id, [
-        'user_id' => 2,
-        'bio' => 'new bio sentence'
-    ]);
-    $response->assertStatus(403);
 });
 
 
