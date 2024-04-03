@@ -1,8 +1,9 @@
 # EchoesVerse
 
-This Laravel project is an API-only social media clone, designed to provide the foundational backend functionalities for
-a social networking platform. It includes user management, post creation, like and comment functionalities, as well as
-basic authentication and authorization mechanisms.
+The Laravel project at hand serves as an API-only implementation, devised as part of the ALX program's graduation
+project. Its primary objective is to establish essential backend functionalities requisite for a social networking
+platform. Core features encompass user management, post generation, as well as like and comment capabilities,
+complemented by fundamental authentication and authorization mechanisms.
 
 ## Features
 
