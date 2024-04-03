@@ -55,24 +55,24 @@ basic authentication and authorization mechanisms.
 
 1. Installing composer dependencies
 
-  ```bash
+    ```bash
     docker run --rm \
         -u "$(id -u):$(id -g)" \
         -v "$(pwd):/var/www/html" \
         -w /var/www/html \
         laravelsail/php83-composer:latest \
         composer install --ignore-platform-reqs
-   ``` 
+    ``` 
 
 2. Starting docker image
 
-  ```bash
-    ./vendor/bin/sail up
-   ```
+    ```bash
+        ./vendor/bin/sail up
+    ```
 
 3. Install dependencies using Composer:
 
-    ```bash
+   ```bash
    ./vendor/bin/sail composer install
     ```
 
